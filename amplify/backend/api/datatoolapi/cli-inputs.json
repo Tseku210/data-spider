@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/datatool": {
+      "name": "/datatool",
+      "lambdaFunction": "datatool",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

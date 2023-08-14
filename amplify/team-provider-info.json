@@ -1,0 +1,36 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-dataspider-dev-134219-authRole",
+      "UnauthRoleArn": "arn:aws:iam::244075696814:role/amplify-dataspider-dev-134219-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::244075696814:role/amplify-dataspider-dev-134219-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-dataspider-dev-134219-deployment",
+      "UnauthRoleName": "amplify-dataspider-dev-134219-unauthRole",
+      "StackName": "amplify-dataspider-dev-134219",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:244075696814:stack/amplify-dataspider-dev-134219/2ce60ea0-399c-11ee-959f-0a07588be628",
+      "AmplifyAppId": "d15lvv8aj9qm5d"
+    },
+    "categories": {
+      "auth": {
+        "dataspider8564f634": {}
+      },
+      "function": {
+        "datatool": {
+          "deploymentBucketName": "amplify-dataspider-dev-134219-deployment",
+          "s3Key": "amplify-builds/datatool-586e56744665792b7769-build.zip"
+        }
+      },
+      "storage": {
+        "datatool": {},
+        "dataspiderb71fb555": {
+          "bucketName": "handpro-datatool",
+          "region": "ap-southeast-1"
+        }
+      },
+      "api": {
+        "datatoolapi": {}
+      }
+    }
+  }
+}

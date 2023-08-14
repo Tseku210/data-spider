@@ -1,0 +1,111 @@
+{
+  "api": {
+    "datatoolapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "datatool"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "auth": {
+    "dataspider8564f634": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "datatool": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "datatool"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_datatool_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "datatool"
+        }
+      ]
+    },
+    "AMPLIFY_function_datatool_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "datatool"
+        }
+      ]
+    },
+    "AMPLIFY_storage_dataspiderb71fb555_bucketName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "dataspiderb71fb555"
+        }
+      ]
+    },
+    "AMPLIFY_storage_dataspiderb71fb555_region": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "dataspiderb71fb555"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "dataspiderb71fb555": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3",
+      "serviceType": "imported"
+    },
+    "datatool": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    }
+  }
+}

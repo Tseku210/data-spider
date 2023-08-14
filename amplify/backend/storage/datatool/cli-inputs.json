@@ -1,0 +1,10 @@
+{
+  "resourceName": "datatool",
+  "tableName": "datatool",
+  "partitionKey": {
+    "fieldName": "userId",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}
