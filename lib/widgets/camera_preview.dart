@@ -16,7 +16,7 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   @override
   Widget build(BuildContext context) {
-    CameraModel cameraProvider = context.read<CameraModel>();
+    CameraModel cameraProvider = context.watch<CameraModel>();
     return Stack(
       children: [
         CameraPreview(cameraProvider.controller),
@@ -33,7 +33,7 @@ class _CameraState extends State<Camera> {
               child: const Icon(
                 Icons.camera,
                 size: 100,
-                color: AppColors.white,
+                color: AppColors.blue,
               ),
             ),
           ),

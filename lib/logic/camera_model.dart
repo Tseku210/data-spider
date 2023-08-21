@@ -3,56 +3,71 @@ import 'package:flutter/material.dart';
 
 class CameraModel with ChangeNotifier {
   CameraDescription? camera;
-  late CameraController _controller;
-  Future<void>? initializeControllerFuture;
+  CameraController? _controller;
   bool isInitialized = false;
   bool isCameraOn = false;
 
-  CameraModel() {
-    _initCamera();
+  CameraModel(CameraDescription this.camera) {
+    initCamera();
   }
 
-  Future<void> _initCamera() async {
-    final cameras = await availableCameras();
-    camera = cameras.first;
+  Future<void> initCamera() async {
+    try {
+      _controller = CameraController(
+        camera!,
+        ResolutionPreset.max,
+      );
+      // await controller.initialize();
+      isInitialized = true;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error occurred during camera initialization: $e');
+      isInitialized = false;
+    }
+  }
 
-    _controller = CameraController(
-      camera!,
-      ResolutionPreset.max,
-    );
-    initializeControllerFuture = _controller.initialize();
-    isInitialized = true;
-    // Notify listeners after initialization.
-    notifyListeners();
+  CameraController get controller {
+    if (_controller == null) {
+      throw Exception("Camera controller is not initialized");
+    }
+    return _controller!;
   }
 
   void toggle() {
     isCameraOn = !isCameraOn;
-    notifyListeners();
+    // notifyListeners();
   }
 
-  Future takePicture(Function(String) setImagePath) async {
-    if (!_controller.value.isInitialized) {
-      return null;
-    }
-    if (_controller.value.isTakingPicture) {
-      return null;
-    }
+  Future<String?> takeImage() async {
     try {
-      await _controller.setFlashMode(FlashMode.off);
-      XFile picture = await _controller.takePicture();
-      setImagePath(picture.path);
-    } on CameraException catch (e) {
-      debugPrint('Error occured while taking picture: $e');
+      if (_controller == null) {
+        print("Camera is not initialized.");
+        return null;
+      }
+
+      if (!_controller!.value.isInitialized ||
+          !_controller!.value.isTakingPicture) {
+        _controller!.setFlashMode(FlashMode.off);
+        XFile picture = await _controller!.takePicture();
+        print("Picture saved: ${picture.path}");
+        return picture.path; // Return the path
+      } else {
+        print("Camera is busy. Couldn't capture image.");
+        return null;
+      }
+    } catch (e) {
+      print("Error taking picture: $e");
       return null;
+    } finally {
+      print("Finally block executed");
+      toggle();
     }
   }
-
-  CameraController get controller => _controller;
 
   @override
   void dispose() {
-    _controller.dispose();
+    print("disposing camera controller");
+    _controller!.dispose();
     super.dispose();
   }
 }
