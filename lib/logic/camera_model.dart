@@ -27,9 +27,6 @@ class CameraModel with ChangeNotifier {
   }
 
   CameraController get controller {
-    if (_controller == null) {
-      throw Exception("Camera controller is not initialized");
-    }
     return _controller!;
   }
 
@@ -48,7 +45,11 @@ class CameraModel with ChangeNotifier {
       if (!_controller!.value.isInitialized ||
           !_controller!.value.isTakingPicture) {
         _controller!.setFlashMode(FlashMode.off);
+        await _controller!.setFocusMode(FocusMode.locked);
+        await _controller!.setExposureMode(ExposureMode.locked);
         XFile picture = await _controller!.takePicture();
+        await _controller!.setFocusMode(FocusMode.locked);
+        await _controller!.setExposureMode(ExposureMode.locked);
         print("Picture saved: ${picture.path}");
         return picture.path; // Return the path
       } else {
@@ -68,6 +69,7 @@ class CameraModel with ChangeNotifier {
   void dispose() {
     print("disposing camera controller");
     _controller!.dispose();
+    isInitialized = false;
     super.dispose();
   }
 }

@@ -13,6 +13,7 @@ import 'package:data_spider/widgets/moneytypeandquantity.dart';
 import 'package:data_spider/widgets/sendbutton.dart';
 import 'package:data_spider/widgets/total_amount.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_overlay_loader/flutter_overlay_loader.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -32,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // late LoginProvider _loginProvider;
 
   var uuid = const Uuid();
+  bool _isLoaderVisible = false;
 
   List<MoneyData> moneyWidgets = [];
 
@@ -71,13 +73,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Future<void> sendData() async {
-    print("About to populate data...");
+    //show loader
     bool isOk = populateData();
-    print("Data populated: $isOk");
-
     if (!isOk) {
       return;
     }
+
     bool isPublished = await context
         .read<ApiProvider>()
         .publish(data, frontCamera.getImagePath, backCamera.getImagePath);
@@ -107,19 +108,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     if (state == AppLifecycleState.inactive) {
+      debugPrint("disposing in active");
       cameraController.dispose();
-      context.read<CameraModel>().dispose();
+      // context.read<CameraModel>().dispose();
     } else if (state == AppLifecycleState.resumed) {
-      context.read<CameraModel>().initCamera();
+      // context.read<CameraModel>().initCamera();
+      print("resuming in resumed");
+      cameraController.initialize();
     }
   }
 
   @override
   void dispose() {
+    print("disposinggg");
     super.dispose();
 
     totalAmountController.dispose();
     Provider.of<CameraModel>(context).dispose();
+    Loader.hide();
 
     for (var moneyData in moneyWidgets) {
       moneyData.dispose();
@@ -247,6 +253,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // _loginProvider = context.watch<LoginProvider>();
     Future<void> initializeControllerFuture =
         _cameraProvider.controller.initialize();
+
     return Scaffold(
       body: _cameraProvider.isCameraOn
           ? FutureBuilder<void>(
@@ -309,6 +316,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       cameraWidget(
                         frontCamera,
                         onCamera: () {
+                          if (!mounted) return;
                           _cameraProvider.toggle();
                           deleteImage(frontCamera.getImagePath);
                           setState(() {
@@ -319,6 +327,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       cameraWidget(
                         backCamera,
                         onCamera: () {
+                          if (!mounted) return;
                           _cameraProvider.toggle();
                           deleteImage(backCamera.getImagePath);
                           setState(() {
@@ -337,7 +346,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             .map((moneyData) => moneyData.buildWidget())
                             .toList(),
                       ),
-                      sendButton(onSend: sendData),
+                      sendButton(onSend: () async {
+                        Loader.show(context,
+                            progressIndicator: const CircularProgressIndicator(
+                              semanticsLabel: "Өгөгдлийг илгээж байна",
+                            ));
+                        await sendData();
+                        Loader.hide();
+                      }),
                       const SizedBox(height: 20),
                     ],
                   ),
