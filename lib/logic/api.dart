@@ -20,8 +20,9 @@ class ApiProvider with ChangeNotifier {
   Future<bool> publish(Map<String, dynamic> data, String? frontImagePath,
       String? secondImagePath) async {
     await getUserToken();
-    print('userToken: $userToken, $frontImagePath, $secondImagePath');
+
     var url = Uri.parse('$apiGatewayUrl/cash-assist');
+
     var response = await http.post(
       url,
       headers: {
@@ -30,12 +31,12 @@ class ApiProvider with ChangeNotifier {
       },
       body: jsonEncode(data),
     );
-    print('response: ${response.statusCode} ${response.body}');
     bool isPublishedToS3 = await publishPhotoToS3(
         frontImageId: data['frontImageId'],
         frontImagePath: frontImagePath!,
         backImageId: data['backImageId'],
         backImagePath: secondImagePath);
+
     if (response.statusCode == 200 && isPublishedToS3) {
       return true;
     }
@@ -61,8 +62,6 @@ class ApiProvider with ChangeNotifier {
       body: frontImageBytes,
     );
 
-    print('response: ${response.statusCode} ${response.body}');
-
     if (backImageId != null && backImagePath != null) {
       var backImageFile = File(backImagePath);
       var backImageBytes = await backImageFile.readAsBytes();
@@ -77,6 +76,7 @@ class ApiProvider with ChangeNotifier {
         body: backImageBytes,
       );
     }
+
     if (response.statusCode == 200) {
       return true;
     }

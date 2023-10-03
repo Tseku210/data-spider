@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:data_spider/camera.dart';
 import 'package:data_spider/logic/api.dart';
 import 'package:data_spider/logic/login.dart';
 import 'package:data_spider/logic/money_data.dart';
@@ -254,113 +255,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     Future<void> initializeControllerFuture =
         _cameraProvider.controller.initialize();
 
-    return Scaffold(
-      body: _cameraProvider.isCameraOn
-          ? FutureBuilder<void>(
-              future: initializeControllerFuture,
-              builder: (context, snapshot) {
-                if (!_cameraProvider.isInitialized) {
-                  // This means the _initializeControllerFuture hasn't been properly initialized yet
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.connectionState == ConnectionState.done) {
-                  // If the Future is complete, display the preview.
-                  print("camera on");
-                  return Camera(onImageTaken: onImageTaken);
-                } else {
-                  // Otherwise, display a loading indicator.
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
-            )
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          FilledButton(
-                            onPressed: () {
-                              showMyDialog(context);
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateColor.resolveWith(
-                                  (states) => AppColors.red),
-                              side: MaterialStateProperty.all<BorderSide>(
-                                BorderSide(
-                                  color: AppColors.black.withOpacity(0.1),
-                                  width: 2,
-                                ),
-                              ),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                            ),
-                            child: Text(
-                              'Тайлбар харах',
-                              style: TextStyles.textLargeBold()
-                                  .copyWith(color: AppColors.white),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-                      cameraWidget(
-                        frontCamera,
-                        onCamera: () {
-                          if (!mounted) return;
-                          _cameraProvider.toggle();
-                          deleteImage(frontCamera.getImagePath);
-                          setState(() {
-                            frontCamera.setImagePath = null;
-                          });
-                        },
-                      ),
-                      cameraWidget(
-                        backCamera,
-                        onCamera: () {
-                          if (!mounted) return;
-                          _cameraProvider.toggle();
-                          deleteImage(backCamera.getImagePath);
-                          setState(() {
-                            backCamera.setImagePath = null;
-                          });
-                        },
-                      ),
-                      totalAmount("Нийт мөнгөн дүн", onChanged: (value) {
-                        totalAmountController.text = value;
-                      }),
-                      moneyTypeAndQuantityWidget(
-                        "Дэвсгэртийн тоо",
-                        onClick: _addMoneyWidget,
-                        onRemove: _removeMoneyWidget,
-                        moneyWidgets: moneyWidgets
-                            .map((moneyData) => moneyData.buildWidget())
-                            .toList(),
-                      ),
-                      sendButton(onSend: () async {
-                        Loader.show(context,
-                            progressIndicator: const CircularProgressIndicator(
-                              semanticsLabel: "Өгөгдлийг илгээж байна",
-                            ));
-                        await sendData();
-                        Loader.hide();
-                      }),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-    );
+    return Scaffold(body: CameraPage());
   }
 
   Widget cameraWidget(CameraData cameraData, {VoidCallback? onCamera}) {
